@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Pokedex</title>
+        <link rel="stylesheet" href="styles.css" />
+        <meta
+            name="description"
+            content="Client-side app illustrating fetch and axios"
+        />
+        <meta name="author" content="Denise Case" />
+        <!-- Font Awesome -->
+        <link
+            rel="stylesheet"
+            href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
+        />
+        <!-- Bootstrap core CSS -->
+        <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+        <!-- Material Design Bootstrap -->
+        <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.8.7/css/mdb.min.css"
+            rel="stylesheet"
+        />
+        <!-- required for sticky footer -->
+        <style>
+            body,
+            .sticky-footer-wrapper {
+                min-height: 100vh;
+            }
+        </style>
+    </head>
+    <body class="d-flex flex-column sticky-footer-wrapper">
+        <!-- Main -->
+        <h1>pokedex</h1>
+        <div>
+            <label for="name">name or id</label>
+            <input type="text" id="name" placeholder="insert name or id here" />
+            <button type="button" class="btn btn-primary" id="search">
+                search
+            </button>
+            <img src="" alt="" id="img" />
+            <div id="error"></div>
+            <ul class="list-group" id="info">
+                <li class="list-group-item" id="pokemonName">Name:</li>
+                <li class="list-group-item" id="height">Height:</li>
+                <li class="list-group-item" id="weight">Weight:</li>
+                <li class="list-group-item" id="types">Types:</li>
+            </ul>
+            <div id="sameType"></div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer mt-auto py-3 bg-light">
+            <div class="container">
+                <span class="text-muted">Footer</span>
+            </div>
+        </footer>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.4/umd/popper.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.8.7/js/mdb.min.js"></script>
+
+        <!-- add axios with cdn - still no build tools needed -->
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+        <script src="./src/index.js"></script>
+    </body>
+</html>
