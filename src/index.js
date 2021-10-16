@@ -15,13 +15,12 @@ const getChar = async (baseURL, name = "") => {
 };
 
 async function handleDisplayResult() {
-  const searchName = document.getElementById("name").value;
+  const searchName = document.getElementById("name").value.toLowerCase();
   cleanBoard();
-  result = await getChar(baseURL, searchName.toLowerCase() + "/"); // because the api gets only lower cased name
+  result = await getChar(baseURL, searchName + "/"); // because the api gets only lower cased name
   if (!result) {
     data = {};
     displayResult(undefined);
-
     return;
   } else {
     data = {
@@ -65,18 +64,19 @@ function displayResult(data) {
   for (let line of data.types) {
     let typeElem = createElement("button", [line.type.name]);
     typeElem.addEventListener("click", handleshowThisType);
-
     document.getElementById("types").append(typeElem);
   }
+  showInfo();
+}
+function showInfo() {
   document.getElementById("pokemonName").innerText +=
     "Name: " + data["pokemonName"];
   document.getElementById("height").innerText += "Height: " + data["height"];
   document.getElementById("weight").innerText += "weight: " + data["weight"];
   document.getElementById("img").setAttribute("src", data.frontImg);
-  document.getElementById("img").addEventListener("mouseenter", handleImgEnter);
-  document.getElementById("img").addEventListener("mouseleave", handleImgLeave);
 }
-
+document.getElementById("img").addEventListener("mouseenter", handleImgEnter);
+document.getElementById("img").addEventListener("mouseleave", handleImgLeave);
 function handleImgEnter() {
   document.getElementById("img").setAttribute("src", data.backImg);
 }
