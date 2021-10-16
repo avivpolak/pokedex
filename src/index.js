@@ -1,9 +1,10 @@
-let data;
-document
-  .getElementById("search")
-  .addEventListener("click", handleDisplayResult);
-const baseURL = "https://pokeapi.co/api/v2/pokemon/";
+/** @format */
 
+let data;
+document.getElementById("search").addEventListener("click", handleSearch);
+document.getElementById("img").addEventListener("mouseenter", handleImgEnter);
+document.getElementById("img").addEventListener("mouseleave", handleImgLeave);
+const baseURL = "https://pokeapi.co/api/v2/pokemon/";
 const getChar = async (baseURL, name = "") => {
   try {
     const response = await axios.get(baseURL + name);
@@ -13,9 +14,7 @@ const getChar = async (baseURL, name = "") => {
     return undefined;
   }
 };
-
-async function handleDisplayResult() {
-  const searchName = document.getElementById("name").value.toLowerCase();
+async function manageDisplayResult(searchName) {
   cleanBoard();
   result = await getChar(baseURL, searchName + "/"); // because the api gets only lower cased name
   if (!result) {
@@ -34,25 +33,11 @@ async function handleDisplayResult() {
     displayResult(data);
   }
 }
-async function handleDisplayResultFromList(name) {
-  cleanBoard();
-  const searchName = name.toLowerCase(); //the api gets only lower cased name
-  result = await getChar(baseURL, searchName + "/");
-  if (!result) {
-    data = {};
-    displayResult(undefined);
-    return;
-  } else {
-    data = {
-      height: result.height,
-      weight: result.weight,
-      pokemonName: result.name,
-      frontImg: result.sprites["front_default"],
-      backImg: result.sprites["back_default"],
-      types: result.types,
-    };
-    displayResult(data);
-  }
+function handleSearch() {
+  displayThisPokemon(document.getElementById("name").value.toLowerCase());
+}
+function displayThisPokemon(name) {
+  manageDisplayResult(name.toLowerCase());
 }
 
 function displayResult(data) {
@@ -60,23 +45,21 @@ function displayResult(data) {
     document.getElementById("error").innerText = "No such pokimon exsist!";
     return;
   }
+  showInfo();
+}
+function showInfo() {
   document.getElementById("types").append("Types: ");
   for (let line of data.types) {
     let typeElem = createElement("button", [line.type.name]);
     typeElem.addEventListener("click", handleshowThisType);
     document.getElementById("types").append(typeElem);
   }
-  showInfo();
-}
-function showInfo() {
-  document.getElementById("pokemonName").innerText +=
-    "Name: " + data["pokemonName"];
+  document.getElementById("pokemonName").innerText += "Name: " + data["pokemonName"];
   document.getElementById("height").innerText += "Height: " + data["height"];
   document.getElementById("weight").innerText += "weight: " + data["weight"];
   document.getElementById("img").setAttribute("src", data.frontImg);
 }
-document.getElementById("img").addEventListener("mouseenter", handleImgEnter);
-document.getElementById("img").addEventListener("mouseleave", handleImgLeave);
+
 function handleImgEnter() {
   document.getElementById("img").setAttribute("src", data.backImg);
 }
@@ -87,7 +70,7 @@ function handleshowThisType(e) {
   document.getElementById("sameType").innerText = "";
   showThisType(e.target.innerText);
 }
-async function getFullList(result, type) {
+async function ListFromType(result, type) {
   let list = [];
   for (let pokemon of result.results) {
     getChar(pokemon.url, "").then((result) => {
@@ -111,17 +94,14 @@ async function showThisType(type) {
     }
   });
 }
+
 function handleDisplayFromList(e) {
-  let name = e.target.innerText;
-  handleDisplayResultFromList(name);
+  displayThisPokemon(e.target.innerText);
 }
 async function displayThisType(type) {
-  const result = await getChar(baseURL + "?limit=1000");
-  //console.log(result);
-  return await getFullList(result, type);
+  return await ListFromType(await getChar(baseURL + "?limit=1000"), type);
 }
 function cleanBoard() {
-  // document.getElementById("info").innerText = "";
   document.getElementById("name").value = "";
   document.getElementById("types").innerHTML = "";
   document.getElementById("pokemonName").innerText = "";
@@ -132,13 +112,7 @@ function cleanBoard() {
   document.getElementById("sameType").innerText = "";
 }
 
-function createElement(
-  tagname,
-  children = [],
-  classes = [],
-  attributes,
-  events
-) {
+function createElement(tagname, children = [], classes = [], attributes, events) {
   //the most generic element builder.
   //we will build all the elements here.
 
