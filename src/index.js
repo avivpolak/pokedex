@@ -4,7 +4,7 @@ let data;
 document.getElementById("search").addEventListener("click", handleSearch);
 document.getElementById("img").addEventListener("mouseenter", handleImgEnter);
 document.getElementById("img").addEventListener("mouseleave", handleImgLeave);
-const baseURL = "https://localhost:3000/";
+
 let username = "";
 if (localStorage.username) {
     username = localStorage.username;
@@ -15,31 +15,42 @@ if (localStorage.username) {
 } else {
     document.getElementById("logout").classList.add("hide");
 }
-const getChar = async (baseURL, name = "") => {
+const baseURL = "http://localhost:5000/pokemon/get/23";
+const Headers = {
+    username: username,
+};
+async function getChar(baseURL, name = "") {
     try {
-        const response = await axios.get(baseURL + "pokemon/" + name);
+        const response = await axios.get(baseURL, {
+            username: username,
+        });
+
         const json = response.data;
         return json;
     } catch (error) {
         return undefined;
     }
-};
+}
 async function manageDisplayResult(searchName) {
     cleanBoard();
-    result = await getChar(baseURL, searchName + "/"); // because the api gets only lower cased name
+    result = await getChar(baseURL, searchName); // because the api gets only lower cased name
+    console.log(result);
     if (!result) {
         data = {};
         displayResult(undefined);
         return;
     } else {
+        console.log(result);
         data = {
             height: result.height,
             weight: result.weight,
             pokemonName: result.name,
-            frontImg: result.sprites["front_default"],
-            backImg: result.sprites["back_default"],
+            frontImg: result["front_pic"],
+            backImg: result["back_pic"],
             types: result.types,
+            abilities: result.abilities,
         };
+        console.log(data);
         displayResult(data);
     }
 }
@@ -60,7 +71,8 @@ function displayResult(data) {
 function showInfo() {
     document.getElementById("types").append("Types: ");
     for (let line of data.types) {
-        let typeElem = createElement("button", [line.type.name]);
+        console.log(line);
+        let typeElem = createElement("button", [line]);
         typeElem.addEventListener("click", handleshowThisType);
         document.getElementById("types").append(typeElem);
     }
@@ -84,6 +96,7 @@ function handleshowThisType(e) {
 }
 async function ListFromType(result, type) {
     let list = [];
+    console.log(result);
     for (let pokemon of result.results) {
         getChar(pokemon.url, "").then((result) => {
             let listOfTypes = [];
