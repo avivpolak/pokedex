@@ -4,15 +4,20 @@ let data;
 document.getElementById("search").addEventListener("click", handleSearch);
 document.getElementById("img").addEventListener("mouseenter", handleImgEnter);
 document.getElementById("img").addEventListener("mouseleave", handleImgLeave);
-const baseURL = "https://pokeapi.co/api/v2/pokemon/";
+const baseURL = "https://localhost:3000/";
 let username = "";
 if (localStorage.username) {
     username = localStorage.username;
     document.getElementById("username").innerText = username;
+    document.getElementById("login").classList.add("hide");
+    document.getElementById("logout").classList.remove("hide");
+    document.getElementById("usernameInput").classList.add("hide");
+} else {
+    document.getElementById("logout").classList.add("hide");
 }
 const getChar = async (baseURL, name = "") => {
     try {
-        const response = await axios.get(baseURL + name);
+        const response = await axios.get(baseURL + "pokemon/" + name);
         const json = response.data;
         return json;
     } catch (error) {
@@ -64,6 +69,7 @@ function showInfo() {
     document.getElementById("height").innerText += "Height: " + data["height"];
     document.getElementById("weight").innerText += "weight: " + data["weight"];
     document.getElementById("img").setAttribute("src", data.frontImg);
+    //if(isCatched())
 }
 
 function handleImgEnter() {
