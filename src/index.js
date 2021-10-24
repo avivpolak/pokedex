@@ -1,27 +1,26 @@
 /** @format */
-
-let data;
-document.getElementById("search").addEventListener("click", handleSearch);
-document.getElementById("img").addEventListener("mouseenter", handleImgEnter);
-document.getElementById("img").addEventListener("mouseleave", handleImgLeave);
-
 let username = "";
 if (localStorage.username) {
     username = localStorage.username;
-    document.getElementById("username").innerText = username;
+    document.getElementById("title").innerText = username + "'s pokedex";
     document.getElementById("login").classList.add("hide");
     document.getElementById("logout").classList.remove("hide");
     document.getElementById("usernameInput").classList.add("hide");
 } else {
     document.getElementById("logout").classList.add("hide");
 }
-const baseURL = "http://localhost:5000/pokemon/get/23";
+const baseURL = "http://localhost:5000/pokemon/get/";
 const Headers = {
     username: username,
 };
+let data;
+document.getElementById("search").addEventListener("click", handleSearch);
+document.getElementById("img").addEventListener("mouseenter", handleImgEnter);
+document.getElementById("img").addEventListener("mouseleave", handleImgLeave);
+
 async function getChar(baseURL, name = "") {
     try {
-        const response = await axios.get(baseURL, {
+        const response = await axios.get(baseURL + name, {
             username: username,
         });
 
@@ -31,16 +30,35 @@ async function getChar(baseURL, name = "") {
         return undefined;
     }
 }
+axios.defaults.headers.common["username"] = username;
+async function isCought(pokemon) {
+    let res = await catchPokemon(pokemon);
+    if (res.status === 200) return true;
+    return false;
+}
+async function catchPokemon(pokemon) {
+    try {
+        const res = await axios.put(
+            `http://localhost:5000/pokemon/catch/${pokemon}`
+        );
+        return res;
+    } catch (err) {
+        console.log(err.status);
+    }
+}
+async function log() {
+    console.log(await catchPokemon("pika"));
+}
+
 async function manageDisplayResult(searchName) {
     cleanBoard();
     result = await getChar(baseURL, searchName); // because the api gets only lower cased name
-    console.log(result);
+
     if (!result) {
         data = {};
         displayResult(undefined);
         return;
     } else {
-        console.log(result);
         data = {
             height: result.height,
             weight: result.weight,
@@ -50,7 +68,7 @@ async function manageDisplayResult(searchName) {
             types: result.types,
             abilities: result.abilities,
         };
-        console.log(data);
+
         displayResult(data);
     }
 }
@@ -71,7 +89,6 @@ function displayResult(data) {
 function showInfo() {
     document.getElementById("types").append("Types: ");
     for (let line of data.types) {
-        console.log(line);
         let typeElem = createElement("button", [line]);
         typeElem.addEventListener("click", handleshowThisType);
         document.getElementById("types").append(typeElem);
@@ -96,35 +113,33 @@ function handleshowThisType(e) {
 }
 async function ListFromType(result, type) {
     let list = [];
-    console.log(result);
     for (let pokemon of result.results) {
-        getChar(pokemon.url, "").then((result) => {
-            let listOfTypes = [];
-            for (let Type in result.types) {
-                listOfTypes.push(result.types[Type].type.name);
-            }
-            if (listOfTypes.includes(type)) list.push(result.name);
-        });
+        result = await getChar(pokemon.url, "");
+        let listOfTypes = [];
+        for (let Type in result.types) {
+            listOfTypes.push(result.types[Type].type.name);
+        }
+        if (listOfTypes.includes(type)) list.push(result.name);
     }
-
     return list;
 }
 async function showThisType(type) {
-    let list = await displayThisType(type);
-    displayThisType(type).then(() => {
-        for (let pokemon of list) {
-            let typeElem = createElement("div", [pokemon]);
-            typeElem.addEventListener("click", handleDisplayFromList);
-            document.getElementById("sameType").append(typeElem);
-        }
-    });
+    let list = await getList(type);
+    for (let i = 0; i < list.length; i++) {
+        const element = list[i];
+        let typeElem = createElement("div", [element]);
+        typeElem.addEventListener("click", handleDisplayFromList);
+        document.getElementById("sameType").append(typeElem);
+    }
 }
 
 function handleDisplayFromList(e) {
     displayThisPokemon(e.target.innerText);
 }
-async function displayThisType(type) {
-    return await ListFromType(await getChar(baseURL + "?limit=1000"), type);
+async function getList(type) {
+    response = await getChar("https://pokeapi.co/api/v2/pokemon/?limit=1000");
+    list = await ListFromType(response, type);
+    return list;
 }
 function cleanBoard() {
     document.getElementById("name").value = "";
@@ -183,17 +198,18 @@ document.getElementById("logout").addEventListener("click", logout);
 function login() {
     username = document.getElementById("usernameInput").value;
     localStorage["username"] = username;
-    document.getElementById("username").innerText = "hello " + username;
+    document.getElementById("title").innerText = username + "'s pokedex";
     togglelogInOut();
 }
 function logout() {
     username = "";
     localStorage["username"] = "";
-    document.getElementById("username").innerText = username;
+    document.getElementById("title").innerText = username + "pokedex";
     togglelogInOut();
 }
 
 function togglelogInOut() {
+    // document.getElementById("info").classList.toggle("hide");
     document.getElementById("login").classList.toggle("hide");
     document.getElementById("logout").classList.toggle("hide");
     document.getElementById("usernameInput").classList.toggle("hide");
