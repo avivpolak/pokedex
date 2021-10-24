@@ -5,6 +5,11 @@ document.getElementById("search").addEventListener("click", handleSearch);
 document.getElementById("img").addEventListener("mouseenter", handleImgEnter);
 document.getElementById("img").addEventListener("mouseleave", handleImgLeave);
 const baseURL = "https://pokeapi.co/api/v2/pokemon/";
+let username = "";
+if (localStorage.username) {
+    username = localStorage.username;
+    document.getElementById("username").innerText = username;
+}
 const getChar = async (baseURL, name = "") => {
     try {
         const response = await axios.get(baseURL + name);
@@ -155,8 +160,22 @@ function createElement(
     return el;
 }
 document.getElementById("login").addEventListener("click", login);
+document.getElementById("logout").addEventListener("click", logout);
 function login() {
-    const username = document.getElementById("usernameInput").value;
+    username = document.getElementById("usernameInput").value;
     localStorage["username"] = username;
+    document.getElementById("username").innerText = "hello " + username;
+    togglelogInOut();
+}
+function logout() {
+    username = "";
+    localStorage["username"] = "";
     document.getElementById("username").innerText = username;
+    togglelogInOut();
+}
+
+function togglelogInOut() {
+    document.getElementById("login").classList.toggle("hide");
+    document.getElementById("logout").classList.toggle("hide");
+    document.getElementById("usernameInput").classList.toggle("hide");
 }

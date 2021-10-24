@@ -4,12 +4,13 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>Pokedex</title>
-        <link rel="stylesheet" href="styles.css" />
+        <link rel="stylesheet" href="./styles/styles.css" />
         <meta
             name="description"
             content="Client-side app illustrating fetch and axios"
         />
         <meta name="author" content="Denise Case" />
+
         <!-- Font Awesome -->
         <link
             rel="stylesheet"
@@ -56,10 +57,12 @@
         <!-- Footer -->
         <footer class="footer mt-auto py-3 bg-light">
             <div class="container">
-                <label for="usernameInput">username</label>
                 <input type="text" id="usernameInput" placeholder="username" />
                 <button type="button" class="btn btn-primary" id="login">
                     login
+                </button>
+                <button type="button" class="btn btn-primary hide" id="logout">
+                    logout
                 </button>
                 <div id="username"></div>
             </div>
