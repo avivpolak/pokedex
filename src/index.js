@@ -1,5 +1,8 @@
 /** @format */
+
 let username = "";
+
+let allCought = [];
 if (localStorage.username) {
     username = localStorage.username;
     document.getElementById("title").innerText = username + "'s pokedex";
@@ -13,11 +16,16 @@ const baseURL = "http://localhost:5000/pokemon/get/";
 const Headers = {
     username: username,
 };
+axios.defaults.headers.common["username"] = username;
 let data;
 document.getElementById("search").addEventListener("click", handleSearch);
 document.getElementById("img").addEventListener("mouseenter", handleImgEnter);
 document.getElementById("img").addEventListener("mouseleave", handleImgLeave);
-
+document
+    .getElementById("showAllCought")
+    .addEventListener("click", showAllCought);
+getAllCought();
+showAllCought();
 async function getChar(baseURL, name = "") {
     try {
         const response = await axios.get(baseURL + name, {
@@ -30,31 +38,66 @@ async function getChar(baseURL, name = "") {
         return undefined;
     }
 }
-axios.defaults.headers.common["username"] = username;
-async function isCought(pokemon) {
-    let res = await catchPokemon(pokemon);
-    if (res.status === 200) return true;
+
+function isCought(chek) {
+    for (let pokemon of allCought) {
+        if (chek === pokemon.name) return true;
+    }
     return false;
 }
-async function catchPokemon(pokemon) {
+async function handleRelesePokemon() {
+    await relesePokemon(data.pokemonName);
+    console.log("relese");
+}
+async function relesePokemon(pokemon) {
     try {
-        const res = await axios.put(
-            `http://localhost:5000/pokemon/catch/${pokemon}`,
-            await getChar(baseURL, pokemon)
+        const res = await axios.delete(
+            `http://localhost:5000/pokemon/release/${pokemon}`
         );
         return res;
     } catch (err) {
         console.log(err.status);
     }
+    getAllCought();
+}
+
+function handleCatchPokemon() {
+    catchPokemon(data.pokemonName);
+}
+async function catchPokemon(pokemon) {
+    try {
+        const char = await getChar(baseURL, pokemon);
+        const res = await axios.put(
+            `http://localhost:5000/pokemon/catch/${pokemon}`,
+            char
+        );
+        return res;
+    } catch (err) {
+        console.log(err.status);
+    }
+    getAllCought();
 }
 async function getAllCought() {
     let res = await axios.get(`http://localhost:5000/pokemon`);
-    return res.data;
+    allCought = res.data;
+    console.log(allCought);
 }
+async function showAllCought() {
+    await getAllCought();
+    cleanBoard();
+    let container = document.getElementById("allCought");
+    for (let pokemon of allCought) {
+        try {
+            let pic = createElement("img", []);
+            pic.setAttribute("src", pokemon.front_pic);
 
-getAllCought();
-async function log() {
-    console.log(await catchPokemon("pika"));
+            let elem = createElement("div", [pokemon.name, pic]);
+
+            container.append(elem);
+        } catch (err) {
+            console.log(err);
+        }
+    }
 }
 
 async function manageDisplayResult(searchName) {
@@ -79,11 +122,25 @@ async function manageDisplayResult(searchName) {
         displayResult(data);
     }
 }
-function handleSearch() {
+async function handleSearch() {
+    await getAllCought();
     displayThisPokemon(document.getElementById("name").value.toLowerCase());
 }
 function displayThisPokemon(name) {
     manageDisplayResult(name.toLowerCase());
+}
+
+async function loadPokimons() {
+    let ALL = await getChar("https://pokeapi.co/api/v2/pokemon/?limit=1000");
+    for (let pokemon in ALL) {
+        let list = [];
+        let newPok = axios.get(baseURL + pokemon.name, {
+            username: username,
+        });
+        newPok.then((pok) => {
+            console.log(pok);
+        });
+    }
 }
 
 function displayResult(data) {
@@ -105,7 +162,16 @@ function showInfo() {
     document.getElementById("height").innerText += "Height: " + data["height"];
     document.getElementById("weight").innerText += "weight: " + data["weight"];
     document.getElementById("img").setAttribute("src", data.frontImg);
-    //if(isCatched())
+
+    let catchBtn = createElement("button");
+    if (isCought(data["pokemonName"])) {
+        catchBtn.innerText = "relese";
+        catchBtn.addEventListener("click", handleRelesePokemon);
+    } else {
+        catchBtn.innerText = "catch";
+        catchBtn.addEventListener("click", handleCatchPokemon);
+    }
+    document.getElementById("catch").append(catchBtn);
 }
 
 function handleImgEnter() {
@@ -121,15 +187,32 @@ function handleshowThisType(e) {
 async function ListFromType(result, type) {
     let list = [];
     for (let pokemon of result.results) {
-        result = await getChar(pokemon.url, "");
+        pokemon = await getChar(pokemon.url, "");
+
         let listOfTypes = [];
-        for (let Type in result.types) {
-            listOfTypes.push(result.types[Type].type.name);
+        for (let type of pokemon.types) {
+            listOfTypes.push(type.type.name);
+            console.log(listOfTypes);
         }
-        if (listOfTypes.includes(type)) list.push(result.name);
+        if (listOfTypes.includes(type)) {
+            list.push(pokemon.name);
+        }
     }
     return list;
 }
+// let list = [];
+// for (let pokemon of result.results) {
+//     result = getChar(pokemon.url, "");
+//     result.then((pokemon) => {
+//         let listOfTypes = [];
+//         for (let Type in pokemon.types) {
+//             listOfTypes.push(pokemon.types[Type].type.name);
+//         }
+//         if (listOfTypes.includes(type)) list.push(pokemon.name);
+//     });
+// }
+// return list;
+
 async function showThisType(type) {
     let list = await getList(type);
     for (let i = 0; i < list.length; i++) {
@@ -144,9 +227,13 @@ function handleDisplayFromList(e) {
     displayThisPokemon(e.target.innerText);
 }
 async function getList(type) {
-    response = await getChar("https://pokeapi.co/api/v2/pokemon/?limit=1000");
+    response = await getChar("https://pokeapi.co/api/v2/pokemon/?limit=100");
     list = await ListFromType(response, type);
     return list;
+}
+document.getElementById("hideAllCought").addEventListener("click", hideCought);
+function hideCought() {
+    document.getElementById("allCought").innerHTML = "";
 }
 function cleanBoard() {
     document.getElementById("name").value = "";
@@ -157,6 +244,7 @@ function cleanBoard() {
     document.getElementById("img").setAttribute("src", "");
     document.getElementById("error").innerText = "";
     document.getElementById("sameType").innerText = "";
+    document.getElementById("catch").innerHTML = "";
 }
 
 function createElement(
@@ -206,17 +294,21 @@ function login() {
     username = document.getElementById("usernameInput").value;
     localStorage["username"] = username;
     document.getElementById("title").innerText = username + "'s pokedex";
+    axios.defaults.headers.common["username"] = username;
+    getAllCought();
     togglelogInOut();
 }
 function logout() {
+    cleanBoard();
     username = "";
     localStorage["username"] = "";
     document.getElementById("title").innerText = username + "pokedex";
+    axios.defaults.headers.common["username"] = username;
     togglelogInOut();
 }
 
 function togglelogInOut() {
-    // document.getElementById("info").classList.toggle("hide");
+    document.getElementById("infoSec").classList.toggle("hide");
     document.getElementById("login").classList.toggle("hide");
     document.getElementById("logout").classList.toggle("hide");
     document.getElementById("usernameInput").classList.toggle("hide");

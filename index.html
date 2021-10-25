@@ -37,7 +37,7 @@
     <body class="d-flex flex-column sticky-footer-wrapper">
         <!-- Main -->
         <h1 id="title">pokedex</h1>
-        <div>
+        <div id="infoSec">
             <label for="name">name or id</label>
             <input type="text" id="name" placeholder="insert name or id here" />
             <button type="button" class="btn btn-primary" id="search">
@@ -50,14 +50,9 @@
                 <li class="list-group-item" id="height">Height:</li>
                 <li class="list-group-item" id="weight">Weight:</li>
                 <li class="list-group-item" id="types">Types:</li>
-                <li class="list-group-item">
-                    <button
-                        type="button"
-                        class="btn btn-primary"
-                        id="catch"
-                    ></button>
-                </li>
+                <li class="list-group-item" id="catch"></li>
             </ul>
+            <div id="allCought"></div>
             <div id="sameType"></div>
         </div>
 
@@ -70,6 +65,20 @@
                 </button>
                 <button type="button" class="btn btn-primary" id="logout">
                     logout
+                </button>
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    id="showAllCought"
+                >
+                    show All Cought
+                </button>
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    id="hideAllCought"
+                >
+                    hide All Cought
                 </button>
             </div>
         </footer>
