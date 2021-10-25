@@ -47,7 +47,6 @@ function isCought(chek) {
 }
 async function handleRelesePokemon() {
     await relesePokemon(data.pokemonName);
-    console.log("relese");
 }
 async function relesePokemon(pokemon) {
     try {
@@ -72,15 +71,12 @@ async function catchPokemon(pokemon) {
             char
         );
         return res;
-    } catch (err) {
-        console.log(err.status);
-    }
+    } catch (err) {}
     getAllCought();
 }
 async function getAllCought() {
     let res = await axios.get(`http://localhost:5000/pokemon`);
     allCought = res.data;
-    console.log(allCought);
 }
 async function showAllCought() {
     await getAllCought();
@@ -131,15 +127,16 @@ function displayThisPokemon(name) {
 }
 
 async function loadPokimons() {
-    let ALL = await getChar("https://pokeapi.co/api/v2/pokemon/?limit=1000");
+    let ALL = await axios.get("https://pokeapi.co/api/v2/pokemon/?limit=1000");
     for (let pokemon in ALL) {
-        let list = [];
-        let newPok = axios.get(baseURL + pokemon.name, {
-            username: username,
-        });
-        newPok.then((pok) => {
-            console.log(pok);
-        });
+        console.log(pokemon.name);
+        // let list = [];
+        // let newPok = axios.get(baseURL + pokemon.name, {
+        //     username: username,
+        // });
+        // newPok.then((pok) => {
+        //     console.log(pok);
+        // });
     }
 }
 
@@ -181,6 +178,7 @@ function handleImgLeave() {
     document.getElementById("img").setAttribute("src", data.frontImg);
 }
 function handleshowThisType(e) {
+    document.getElementById("catch").innerHTML = "";
     document.getElementById("sameType").innerText = "";
     showThisType(e.target.innerText);
 }
@@ -192,7 +190,6 @@ async function ListFromType(result, type) {
         let listOfTypes = [];
         for (let type of pokemon.types) {
             listOfTypes.push(type.type.name);
-            console.log(listOfTypes);
         }
         if (listOfTypes.includes(type)) {
             list.push(pokemon.name);
@@ -291,6 +288,7 @@ function createElement(
 document.getElementById("login").addEventListener("click", login);
 document.getElementById("logout").addEventListener("click", logout);
 function login() {
+    document.getElementById("catch").innerHTML = "";
     username = document.getElementById("usernameInput").value;
     localStorage["username"] = username;
     document.getElementById("title").innerText = username + "'s pokedex";
@@ -299,7 +297,7 @@ function login() {
     togglelogInOut();
 }
 function logout() {
-    cleanBoard();
+    document.getElementById("catch").innerHTML = "";
     username = "";
     localStorage["username"] = "";
     document.getElementById("title").innerText = username + "pokedex";
