@@ -39,13 +39,20 @@ async function isCought(pokemon) {
 async function catchPokemon(pokemon) {
     try {
         const res = await axios.put(
-            `http://localhost:5000/pokemon/catch/${pokemon}`
+            `http://localhost:5000/pokemon/catch/${pokemon}`,
+            await getChar(baseURL, pokemon)
         );
         return res;
     } catch (err) {
         console.log(err.status);
     }
 }
+async function getAllCought() {
+    let res = await axios.get(`http://localhost:5000/pokemon`);
+    return res.data;
+}
+
+getAllCought();
 async function log() {
     console.log(await catchPokemon("pika"));
 }
