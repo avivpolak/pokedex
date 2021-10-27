@@ -4,12 +4,13 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>Pokedex</title>
-        <link rel="stylesheet" href="styles.css" />
+        <link rel="stylesheet" href="./styles/styles.css" />
         <meta
             name="description"
             content="Client-side app illustrating fetch and axios"
         />
         <meta name="author" content="Denise Case" />
+
         <!-- Font Awesome -->
         <link
             rel="stylesheet"
@@ -35,8 +36,8 @@
     </head>
     <body class="d-flex flex-column sticky-footer-wrapper">
         <!-- Main -->
-        <h1>pokedex</h1>
-        <div>
+        <h1 id="title">pokedex</h1>
+        <div id="infoSec">
             <label for="name">name or id</label>
             <input type="text" id="name" placeholder="insert name or id here" />
             <button type="button" class="btn btn-primary" id="search">
@@ -49,14 +50,36 @@
                 <li class="list-group-item" id="height">Height:</li>
                 <li class="list-group-item" id="weight">Weight:</li>
                 <li class="list-group-item" id="types">Types:</li>
+                <li class="list-group-item" id="catch"></li>
             </ul>
+            <div id="allCought"></div>
             <div id="sameType"></div>
         </div>
 
         <!-- Footer -->
         <footer class="footer mt-auto py-3 bg-light">
             <div class="container">
-                <span class="text-muted">Footer</span>
+                <input type="text" id="usernameInput" placeholder="username" />
+                <button type="button" class="btn btn-primary" id="login">
+                    login
+                </button>
+                <button type="button" class="btn btn-primary" id="logout">
+                    logout
+                </button>
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    id="showAllCought"
+                >
+                    show All Cought
+                </button>
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    id="hideAllCought"
+                >
+                    hide All Cought
+                </button>
             </div>
         </footer>
 
